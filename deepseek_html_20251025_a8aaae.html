@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freddy Fazbear's Pizza</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and basic styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(80, 80, 80, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-gif {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #8B0000, #FFD700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Basic body styles */
+        body {
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Header styles */
+        header {
+            background: linear-gradient(to bottom, #1a1a1a, rgba(0, 0, 0, 0.8));
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #8B0000;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 240px;
+            height: 140px;
+            overflow: visible;
+            transition: transform 0.5s ease;
+            cursor: pointer;
+        }
+
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: linear-gradient(45deg, #8B0000, #FFD700);
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: #f5f5f5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #FFD700;
+            background-color: rgba(139, 0, 0, 0.3);
+        }
+
+        /* Button styles */
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2rem;
+            background: linear-gradient(135deg, #8B0000, #5a0000);
+            color: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            color: #FFD700;
+        }
+
+        /* Page styles */
+        .page {
+            display: none;
+            padding: 3rem 0;
+            min-height: 60vh;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #FFD700;
+            font-size: 2.8rem;
+        }
+
+        /* Home page hero section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9));
+            color: #f5f5f5;
+            padding: 8rem 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            color: #FFD700;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 3px;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        /* Menu items */
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-item {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.9), rgba(30, 30, 30, 0.9));
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s ease;
+            border: 2px solid #444;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-10px);
+            border-color: #FFD700;
+        }
+
+        .menu-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .menu-item-content {
+            padding: 1.5rem;
+        }
+
+        .menu-item h3 {
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #FFD700;
+            font-size: 1.4rem;
+            display: block;
+            margin: 1rem 0;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #5a0000, #1a1a1a, #5a0000);
+            color: #f5f5f5;
+            padding: 4rem 0 2rem;
+            border-top: 4px solid #FFD700;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section {
+            background: rgba(20, 20, 20, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero {
+                padding: 4rem 0;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-gif">
+                FREDDY'S
+            </div>
+            <p class="loading-text">Loading...</p>
+        </div>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo">
+                        FREDDY FAZBEAR'S PIZZA
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" id="home-link"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#" id="menu-link"><i class="fas fa-pizza-slice"></i> Menu</a></li>
+                        <li><a href="#" id="about-link"><i class="fas fa-info-circle"></i> About</a></li>
+                        <li><a href="#" id="cart-link"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Home Page -->
+    <section class="page" id="home-page">
+        <div class="hero">
+            <div class="container">
+                <h1>FREDDY FAZBEAR'S PIZZA</h1>
+                <p>Delicious pizzas with unique flavors in a fun and friendly environment for the whole family. Serving you since 1983!</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn" id="view-menu-btn">View Menu</a>
+                    <a href="#" class="btn" id="locations-btn">Order Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Page -->
+    <section class="page" id="menu-page">
+        <div class="container">
+            <h2 class="section-title">OUR MENU</h2>
+            <div class="menu-items">
+                <!-- Pizza Items -->
+                <div class="menu-item">
+                    <div class="menu-item-img">PEPPERONI PIZZA</div>
+                    <div class="menu-item-content">
+                        <h3>Special Pepperoni Pizza</h3>
+                        <p>Spicy pepperoni, mozzarella cheese, and homemade tomato sauce with secret spices!</p>
+                        <span class="price">$12.99</span>
+                        <a href="#" class="btn add-to-cart">Add to Cart</a>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-img">MIXED PIZZA</div>
+                    <div class="menu-item-content">
+                        <h3>Fazbear's Mixed Pizza</h3>
+                        <p>Mushrooms, olives, bell peppers, pepperoni, and mozzarella cheese!</p>
+                        <span class="price">$14.99</span>
+                        <a href="#" class="btn add-to-cart">Add to Cart</a>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-img">BBQ CHICKEN</div>
+                    <div class="menu-item-content">
+                        <h3>BBQ Chicken Pizza</h3>
+                        <p>Grilled chicken, BBQ sauce, onions, and cheddar cheese!</p>
+                        <span class="price">$15.99</span>
+                        <a href="#" class="btn add-to-cart">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Page -->
+    <section class="page" id="about-page">
+        <div class="container">
+            <h2 class="section-title">ABOUT US</h2>
+            <div class="about-content">
+                <p>Freddy Fazbear's Pizza started in 1983 and has become one of the most popular chain restaurants.</p>
+                <p>We use the freshest ingredients and unique recipes to prepare delicious pizzas for all ages.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Page -->
+    <section class="page" id="cart-page">
+        <div class="container">
+            <h2 class="section-title">YOUR CART</h2>
+            <div class="cart-content">
+                <p>Your cart is empty. Add some delicious pizzas from our menu!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-phone"></i> Phone: 021-12345678</p>
+                    <p><i class="fas fa-envelope"></i> Email: info@fazbearpizza.com</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Working Hours</h3>
+                    <p>Saturday to Wednesday: 11 AM to 11 PM</p>
+                    <p>Thursday and Friday: 11 AM to 12 AM</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>All rights reserved. Freddy Fazbear's Pizza © 2023</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hide loading overlay when page is fully loaded
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Page Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // Show selected page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Set up navigation links
+        document.getElementById('home-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('home-page');
+        });
+        
+        document.getElementById('menu-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('menu-page');
+        });
+        
+        document.getElementById('about-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('about-page');
+        });
+        
+        document.getElementById('cart-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('cart-page');
+        });
+        
+        document.getElementById('view-menu-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('menu-page');
+        });
+
+        // Show home page by default
+        showPage('home-page');
+
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Item added to cart!');
+                showPage('cart-page');
+            });
+        });
+    </script>
+</body>
+</html>
